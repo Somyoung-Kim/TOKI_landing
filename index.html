@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="color-scheme" content="dark"/>
+<title>TOKI — 세상에서 가장 쉬운 육아 기록</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;color-scheme:dark}
+
+:root{
+  --bg-deep:  #060112;
+  --bg-mid:   #0d0520;
+  --bg-card:  rgba(255,255,255,0.06);
+  --main:     #a855f7;
+  --pink:     #c9b8ec;
+  --border:   rgba(255,255,255,0.08);
+  --border-g: rgba(168,85,247,0.3);
+  --text:     #ffffff;
+  --sub:      rgba(255,255,255,0.6);
+  --muted:    rgba(255,255,255,0.35);
+  --grad:     linear-gradient(135deg,#c9b8ec,#a855f7);
+  --teal:     #3D9A8A;
+  --ok:       #7BAE82;
+}
+
+body{
+  font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;
+  background:var(--bg-deep);
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(168,85,247,0.3);border-radius:2px}
+
+/* ── 별 레이어 ── */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.star{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:twinkle var(--dur,3s) ease-in-out infinite var(--delay,0s);
+}
+@keyframes twinkle{
+  0%,100%{opacity:var(--min,.08);transform:scale(1)}
+  50%{opacity:var(--max,.7);transform:scale(1.4)}
+}
+.shoot{
+  position:absolute;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,184,236,0.8),transparent);
+  animation:shooting var(--sd,6s) ease-in-out infinite var(--sdelay,0s);
+  transform-origin:left center;
+}
+@keyframes shooting{
+  0%{opacity:0;transform:translateX(-80px) rotate(-18deg) scaleX(0)}
+  8%{opacity:1}
+  45%{opacity:1;transform:translateX(280px) rotate(-18deg) scaleX(1)}
+  55%,100%{opacity:0;transform:translateX(480px) rotate(-18deg) scaleX(0)}
+}
+
+/* ── 공통 ── */
+section{position:relative;z-index:1}
+.wrap{max-width:440px;margin:0 auto;padding:0 24px}
+
+/* 글래스 카드 */
+.glass{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  position:relative;overflow:hidden;
+}
+.glass::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,184,236,0.4),rgba(168,85,247,0.4),transparent);
+}
+
+/* reveal */
+.reveal{
+  opacity:0;transform:translateY(20px);
+  transition:opacity 0.65s ease,transform 0.65s ease;
+}
+.reveal.on{opacity:1;transform:none}
+.r2{transition-delay:.12s}.r3{transition-delay:.24s}
+
+/* ── STICKY ── */
+.sticky{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(6,1,18,0.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(201,184,236,0.1);
+  transform:translateY(110%);
+  transition:transform 0.35s ease;
+  overflow:hidden;
+}
+.sticky.show{transform:translateY(0)}
+.sticky-cta-wrap{
+  padding:12px 20px 10px;
+}
+.s-btn{
+  display:block;width:100%;
+  background:var(--grad);color:#fff;
+  border:none;border-radius:14px;cursor:pointer;
+  font-family:'Pretendard',sans-serif;
+  box-shadow:0 4px 24px rgba(168,85,247,0.4);
+  overflow:hidden;text-align:center;
+}
+.s-btn-top{
+  display:block;padding:11px 16px 8px;
+  font-size:11px;font-weight:600;
+  opacity:0.75;letter-spacing:0.04em;
+  border-bottom:1px solid rgba(255,255,255,0.15);
+}
+.s-btn-bot{
+  display:block;padding:9px 16px 13px;
+  font-size:15px;font-weight:800;letter-spacing:-0.01em;
+}
+.sticky-share{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(255,255,255,0.05);
+  cursor:pointer;
+  background:rgba(201,184,236,0.04);
+  transition:background .2s;
+}
+.sticky-share:hover{background:rgba(201,184,236,0.08)}
+.sticky-share-ico{font-size:15px;flex-shrink:0}
+.sticky-share-text{flex:1}
+.sticky-share-title{font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);line-height:1.4}
+.sticky-share-sub{font-size:9px;color:rgba(201,184,236,0.35);margin-top:1px}
+.sticky-share-arrow{font-size:11px;color:rgba(201,184,236,0.35);flex-shrink:0}
+
+/* ══════════════════════════════════════
+   S1 HERO
+══════════════════════════════════════ */
+#hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:90px 24px 130px;
+  background:
+    radial-gradient(ellipse 100% 55% at 50% 0%,rgba(30,10,60,0.95) 0%,rgba(20,5,45,0.7) 40%,transparent 75%),
+    radial-gradient(ellipse 70% 50% at 50% 0%,rgba(168,85,247,0.18) 0%,transparent 70%);
+}
+.hero-inner{max-width:440px;margin:0 auto;width:100%}
+
+/* 로고 */
+.logo{margin-bottom:52px}
+.logo img{height:32px;object-fit:contain;filter:brightness(0) invert(1) opacity(0.9)}
+
+/* 뱃지 */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(201,184,236,0.1);
+  border:1px solid rgba(201,184,236,0.2);
+  border-radius:100px;padding:5px 14px;
+  font-size:11px;font-weight:600;color:var(--pink);
+  letter-spacing:0.05em;margin-bottom:24px;
+}
+
+/* 타이틀 */
+.h-title{
+  font-size:22px;font-weight:500;
+  color:rgba(255,255,255,0.6);
+  line-height:1.5;
+  letter-spacing:-0.01em;word-break:keep-all;
+  margin-bottom:0;
+}
+.h-title-2{margin-top:22px}
+.h-accent{
+  font-size:42px;font-weight:900;
+  color:#fff;display:block;
+  line-height:1.15;
+  letter-spacing:-0.04em;word-break:keep-all;
+}
+.h-accent-pink{
+  color:var(--pink);
+  border-bottom:2px solid rgba(201,184,236,0.3);
+  padding-bottom:3px;
+}
+
+/* CTA */
+.h-cta{
+  display:block;width:100%;margin-top:28px;
+  background:var(--grad);color:#fff;
+  border:none;border-radius:14px;cursor:pointer;
+  font-family:'Pretendard',sans-serif;
+  box-shadow:0 4px 28px rgba(168,85,247,0.45);
+  transition:transform .2s,box-shadow .2s;
+  text-align:center;
+  overflow:hidden;
+}
+.h-cta:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(168,85,247,0.6)}
+
+.h-tag{
+  font-size:13px;font-weight:600;
+  color:rgba(201,184,236,0.5);
+  letter-spacing:0.03em;
+  margin-top:14px;line-height:1.9;
+}
+
+/* 공유 카드 C안 */
+.share-banner{
+  display:flex;align-items:center;gap:12px;
+  margin-top:16px;
+  padding:13px 16px;
+  background:rgba(201,184,236,0.07);
+  border:1px solid rgba(201,184,236,0.12);
+  border-radius:14px;
+}
+.share-banner-ico{font-size:18px;flex-shrink:0;line-height:1}
+.share-banner-text{flex:1}
+.share-banner-title{font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);line-height:1.4}
+.share-banner-sub{font-size:10px;color:rgba(201,184,236,0.4);margin-top:2px}
+.share-banner-btn{
+  font-size:10px;font-weight:700;
+  color:var(--pink);
+  background:rgba(201,184,236,0.12);
+  border:1px solid rgba(201,184,236,0.2);
+  border-radius:8px;padding:6px 12px;
+  cursor:pointer;flex-shrink:0;
+  font-family:'Pretendard',sans-serif;
+  white-space:nowrap;transition:background .2s;
+}
+.share-banner-btn:hover{background:rgba(201,184,236,0.2)}
+
+/* 음성 데모 글래스 카드 */
+.demo-card{margin-top:28px;padding:24px}
+
+.waveform{
+  display:flex;align-items:center;gap:4px;
+  height:56px;margin-bottom:16px;
+}
+.w-bar{
+  width:4px;border-radius:3px;
+  background:linear-gradient(to top,var(--main),var(--pink));
+  animation:wave var(--d,.8s) ease-in-out infinite alternate;
+}
+@keyframes wave{0%{height:6px}100%{height:var(--h,18px)}}
+
+.mic-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.mic-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--pink);flex-shrink:0;position:relative;
+}
+.mic-dot::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1.5px solid var(--pink);
+  animation:pr 1.6s ease-out infinite;
+}
+@keyframes pr{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.2);opacity:0}}
+
+.vtext{font-size:13px;font-weight:500;color:var(--pink)}
+.cursor{
+  display:inline-block;width:2px;height:12px;
+  background:var(--pink);margin-left:1px;
+  animation:blink 1s step-end infinite;vertical-align:middle;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.vtags{display:flex;gap:6px;flex-wrap:wrap}
+.vtag{
+  font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:8px;
+}
+.vt1{background:rgba(201,184,236,0.15);color:var(--pink)}
+.vt2{background:rgba(255,255,255,0.07);color:var(--sub)}
+.vt3{background:rgba(201,184,236,0.15);color:var(--pink)}
+.vt4{background:rgba(123,174,130,0.15);color:var(--ok)}
+
+
+.sc-hint{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  margin-top:48px;
+}
+.sc-line{
+  width:1px;height:36px;
+  background:linear-gradient(to bottom,transparent,rgba(201,184,236,0.3));
+}
+.sc-lbl{font-size:9px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+
+/* ══════════════════════════════════════
+   S2 공감
+══════════════════════════════════════ */
+#pain{
+  padding:160px 28px;
+  background:linear-gradient(180deg,transparent 0%,rgba(168,85,247,0.04) 50%,transparent 100%);
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.sec-tag{
+  font-size:10px;font-weight:700;letter-spacing:.15em;
+  color:var(--main);text-transform:uppercase;margin-bottom:16px;
+}
+.pain-title{
+  font-size:26px;font-weight:800;color:#fff;
+  line-height:1.3;letter-spacing:-0.025em;
+  word-break:keep-all;margin-bottom:32px;
+}
+.pain-title .acc{
+  font-weight:900;color:var(--pink);
+  border-bottom:2px solid rgba(201,184,236,0.3);
+}
+
+.pain-card{padding:0}
+.pain-hero{
+  font-size:28px;font-weight:900;
+  color:#fff;line-height:1.35;
+  word-break:keep-all;letter-spacing:-0.03em;
+  margin-bottom:36px;padding-bottom:32px;
+  border-bottom:1px solid rgba(201,184,236,0.08);
+}
+.pain-hero .hl{
+  display:block;
+  font-size:34px;font-weight:900;
+  color:#c9b8ec;line-height:1.2;
+  letter-spacing:-0.04em;margin-bottom:8px;
+}
+.pain-para{
+  font-size:15px;font-weight:400;
+  color:rgba(255,255,255,0.55);
+  line-height:2.0;word-break:keep-all;overflow-wrap:break-word;
+  margin-bottom:28px;
+}
+.pain-para:last-of-type{margin-bottom:0}
+.pain-quote{
+  margin:28px 0;padding:18px 20px;
+  background:rgba(201,184,236,0.07);
+  border-left:2.5px solid #c9b8ec;
+  border-radius:0 12px 12px 0;
+  font-size:15px;font-weight:700;
+  color:rgba(255,255,255,0.92);
+  line-height:1.75;word-break:keep-all;
+}
+.pain-sign{
+  margin-top:24px;
+  font-size:12px;color:rgba(201,184,236,0.4);
+  font-style:italic;letter-spacing:0.02em;
+}
+
+/* ══════════════════════════════════════
+   S3 기능
+══════════════════════════════════════ */
+#features{padding:0}
+
+.feat-section{
+  padding:160px 28px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  max-width:440px;margin:0 auto;
+}
+.feat-section:first-child{border-top:none}
+
+.feat-num{
+  font-size:11px;font-weight:600;letter-spacing:0.14em;
+  color:rgba(201,184,236,0.35);text-transform:uppercase;
+  margin-bottom:24px;
+}
+.feat-headline{
+  font-size:32px;font-weight:900;color:#fff;
+  line-height:1.2;letter-spacing:-0.035em;
+  word-break:keep-all;margin-bottom:16px;
+}
+.feat-headline .gr{color:#c9b8ec}
+.feat-one-liner{
+  font-size:16px;font-weight:400;
+  color:rgba(255,255,255,0.5);
+  line-height:1.7;word-break:keep-all;
+  margin-bottom:40px;
+}
+.feat-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:700;
+  color:var(--ok);background:rgba(123,174,130,0.1);
+  padding:5px 12px;border-radius:10px;
+  border:1px solid rgba(123,174,130,0.2);
+  margin-bottom:32px;
+}
+
+/* 프리뷰 카드 — 크고 시원하게 */
+.feat-preview{
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;padding:20px;
+  border:1px solid rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+}
+.fp-time{font-size:11px;color:rgba(201,184,236,0.4);margin-bottom:10px}
+.fp-row{display:flex;align-items:center;gap:12px}
+.fp-dot{width:8px;height:8px;border-radius:50%;background:#c9b8ec;flex-shrink:0}
+.fp-bar{flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,#a855f7,#c9b8ec)}
+.fp-val{font-size:16px;font-weight:900;color:#c9b8ec}
+.fp-touch{
+  display:inline-block;margin-top:14px;
+  font-size:12px;font-weight:800;color:#fff;
+  background:rgba(201,184,236,0.12);
+  border:1px solid rgba(201,184,236,0.2);
+  border-radius:10px;padding:6px 14px;letter-spacing:0.04em;
+}
+
+.twin-preview{display:flex;flex-direction:row;gap:10px}
+.twin-card-p{
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,0.04);
+  border-radius:12px;padding:14px 16px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.twin-name-p{font-size:13px;font-weight:700;color:#fff}
+.twin-data-p{font-size:12px;color:rgba(201,184,236,0.6)}
+
+.ai-preview{display:flex;gap:10px}
+.ai-card-p{
+  flex:1;background:rgba(255,255,255,0.04);
+  border-radius:14px;padding:16px 12px;text-align:center;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.ai-card-p .v{font-size:20px;font-weight:900;color:#c9b8ec;line-height:1.2}
+.ai-card-p .l{font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px}
+.ai-card-p .v.green{color:#7BAE82}
+
+.design-tags{display:flex;gap:8px;flex-wrap:wrap}
+.design-tag{
+  font-size:12px;font-weight:600;
+  padding:6px 14px;border-radius:10px;
+  background:rgba(201,184,236,0.08);color:rgba(201,184,236,0.6);
+  border:1px solid rgba(201,184,236,0.12);
+}
+
+/* ══════════════════════════════════════
+   S4 CTA
+══════════════════════════════════════ */
+#cta{
+  padding:160px 28px 200px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  background:linear-gradient(180deg,transparent 0%,rgba(168,85,247,0.07) 50%,transparent 100%);
+}
+
+.cta-card{
+  padding:36px 24px;
+  background:linear-gradient(135deg,rgba(201,184,236,0.1),rgba(168,85,247,0.1));
+  border-color:rgba(255,255,255,0.1);
+}
+.cta-card::before{opacity:.8}
+
+.cta-badge{
+  display:inline-block;
+  font-size:10px;font-weight:800;letter-spacing:.1em;
+  color:var(--pink);
+  background:rgba(201,184,236,0.12);
+  border:1px solid rgba(201,184,236,0.22);
+  border-radius:100px;padding:4px 14px;
+  margin-bottom:22px;
+}
+.cta-title{
+  font-size:38px;font-weight:900;color:#fff;
+  line-height:1.2;letter-spacing:-0.04em;
+  word-break:keep-all;margin-bottom:16px;
+}
+.cta-acc{
+  font-weight:900;color:var(--pink);
+  border-bottom:2px solid rgba(201,184,236,0.3);
+  display:inline;
+}
+.cta-sub{
+  font-size:16px;color:rgba(201,184,236,0.6);
+  line-height:1.7;margin-bottom:64px;word-break:keep-all;
+  font-weight:400;
+}
+.cta-sub strong{color:rgba(201,184,236,0.6);font-weight:400}
+
+.benefits{display:flex;flex-direction:column;gap:0;margin-bottom:56px}
+.benefit{
+  padding:32px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.benefit:first-child{padding-top:0}
+.benefit-head{
+  display:flex;align-items:flex-start;gap:14px;
+  margin-bottom:12px;
+}
+.bk{
+  width:22px;height:22px;border-radius:7px;flex-shrink:0;margin-top:2px;
+  background:var(--grad);
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;
+}
+.benefit-title{
+  font-size:18px;font-weight:700;
+  color:#fff;letter-spacing:-0.02em;
+  line-height:1.35;word-break:keep-all;
+}
+.benefit-desc{
+  font-size:14px;color:rgba(255,255,255,0.45);
+  line-height:1.85;word-break:keep-all;
+  padding-left:36px;
+}
+
+.form{display:flex;flex-direction:column;gap:12px}
+.inp{
+  width:100%;padding:17px 18px;
+  border:1px solid rgba(201,184,236,0.15);border-radius:14px;
+  background:rgba(255,255,255,0.05);color:#fff;
+  font-size:15px;font-family:'Pretendard',sans-serif;
+  outline:none;-webkit-appearance:none;
+  transition:border-color .2s;
+}
+.inp::placeholder{color:rgba(255,255,255,0.3)}
+.inp:focus{border-color:rgba(201,184,236,0.5)}
+.sub-btn{
+  width:100%;padding:15px;border-radius:12px;border:none;
+  background:var(--grad);color:#fff;
+  font-size:14px;font-weight:800;
+  cursor:pointer;font-family:'Pretendard',sans-serif;
+  letter-spacing:-0.01em;
+  box-shadow:0 6px 28px rgba(168,85,247,0.45);
+  transition:transform .2s,box-shadow .2s;
+}
+.sub-btn:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(168,85,247,0.6)}
+.form-note{font-size:10px;color:var(--muted);text-align:center;margin-top:8px}
+
+.done{display:none;text-align:center;padding:28px 0}
+.done.show{display:block}
+.done-ico{font-size:44px;margin-bottom:12px}
+.done-t{font-size:16px;font-weight:800;color:var(--pink)}
+.done-s{font-size:12px;color:var(--sub);margin-top:6px}
+
+/* ══ FOOTER ══ */
+footer{
+  padding:52px 24px calc(80px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--border);
+  position:relative;z-index:1;
+}
+.ft{max-width:440px;margin:0 auto;text-align:center}
+.ft-letter{
+  font-size:14px;color:var(--sub);
+  line-height:2.2;word-break:keep-all;
+}
+.ft-sign{
+  margin-top:20px;font-size:13px;
+  background:var(--grad);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:600;
+}
+.ft-link{margin-top:24px;font-size:11px;color:var(--muted)}
+.ft-link a{color:inherit;text-decoration:none}
+.ft-logo{margin-top:8px}
+.ft-logo img{height:20px;opacity:0.25;filter:brightness(0) invert(1)}
+
+/* ══ 기능 메인 타이틀 ══ */
+.feat-main-title{
+  padding:160px 28px 120px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  max-width:440px;margin:0 auto;
+}
+.fmt-headline{
+  font-size:44px;font-weight:900;color:#fff;
+  line-height:1.15;letter-spacing:-0.04em;
+  word-break:keep-all;margin-bottom:20px;
+}
+.fmt-sub{
+  font-size:16px;font-weight:400;
+  color:rgba(255,255,255,0.45);
+  line-height:1.8;word-break:keep-all;
+}
+
+/* ══ 기능 섹션 ══ */
+.feat-section{
+  padding:140px 0;
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.fs-inner{max-width:440px;margin:0 auto;padding:0 28px}
+
+.feat-num{
+  font-size:48px;font-weight:900;letter-spacing:-0.04em;
+  color:rgba(201,184,236,0.28);
+  line-height:1;margin-bottom:16px;
+  font-variant-numeric:tabular-nums;
+}
+.feat-headline{
+  font-size:32px;font-weight:900;color:#fff;
+  line-height:1.25;letter-spacing:-0.035em;
+  word-break:keep-all;margin-bottom:16px;
+}
+.feat-headline .gr{color:#c9b8ec}
+.feat-one-liner{
+  font-size:15px;font-weight:400;
+  color:rgba(255,255,255,0.45);
+  line-height:1.8;word-break:keep-all;
+  margin-bottom:40px;
+}
+.feat-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:700;
+  color:var(--ok);background:rgba(123,174,130,0.1);
+  padding:5px 12px;border-radius:10px;
+  border:1px solid rgba(123,174,130,0.2);
+  margin-bottom:28px;
+}
+
+/* 프리뷰 공통 */
+.feat-preview{
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;padding:22px;
+  border:1px solid rgba(255,255,255,0.08);
+  backdrop-filter:blur(12px);
+}
+.fp-time{font-size:16px;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:14px;}
+.fp-wave{display:flex;align-items:center;gap:3px;height:40px;margin-bottom:4px}
+.fp-wbar{
+  width:3px;border-radius:2px;
+  background:linear-gradient(to top,#a855f7,#c9b8ec);
+  animation:wave var(--d,.8s) ease-in-out infinite alternate;
+}
+.fp-row{display:flex;align-items:center;gap:12px}
+.fp-dot{width:8px;height:8px;border-radius:50%;background:#c9b8ec;flex-shrink:0}
+.fp-bar{flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,#a855f7,#c9b8ec)}
+.fp-val{font-size:16px;font-weight:900;color:#c9b8ec}
+.fp-chip{
+  font-size:11px;font-weight:600;
+  padding:4px 10px;border-radius:8px;
+  background:rgba(201,184,236,0.12);
+  color:rgba(201,184,236,0.75);
+  border:1px solid rgba(201,184,236,0.18);
+}
+.fp-touch{
+  display:inline-block;margin-top:14px;
+  font-size:12px;font-weight:800;color:#fff;
+  background:rgba(201,184,236,0.12);
+  border:1px solid rgba(201,184,236,0.2);
+  border-radius:10px;padding:6px 14px;letter-spacing:0.04em;
+}
+
+/* 쌍둥이 프리뷰 */
+.twin-preview{display:flex;flex-direction:row;gap:10px}
+.twin-card-p{
+  background:rgba(255,255,255,0.04);
+  border-radius:14px;padding:16px;
+  border:1px solid rgba(255,255,255,0.07);
+}
+.twin-name-p{
+  font-size:13px;font-weight:700;color:#fff;
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.twin-badge{
+  font-size:9px;font-weight:700;
+  padding:2px 8px;border-radius:6px;
+}
+.twin-log-row{
+  display:flex;justify-content:space-between;
+  font-size:12px;color:rgba(255,255,255,0.5);
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.twin-log-row:last-child{border-bottom:none}
+
+/* AI 프리뷰 */
+.ai-preview{display:flex;gap:10px;margin-bottom:14px}
+.ai-card-p{
+  flex:1;background:rgba(255,255,255,0.04);
+  border-radius:14px;padding:16px 12px;text-align:center;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.ai-card-p .v{font-size:22px;font-weight:900;color:#c9b8ec;line-height:1.2}
+.ai-card-p .l{font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;line-height:1.4}
+.ai-card-p .v.green{color:#7BAE82}
+.ai-insight-row{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 14px;
+  background:rgba(255,255,255,0.04);
+  border-radius:12px;border:1px solid rgba(255,255,255,0.06);
+}
+.ai-insight-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.ai-insight-text{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.65}
+
+/* 깨시 프리뷰 */
+.sleep-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:14px;
+}
+.sleep-label{font-size:11px;color:rgba(255,255,255,0.35)}
+.sleep-time{font-size:13px;font-weight:700;color:#c9b8ec}
+.sleep-bar-wrap{margin-bottom:16px}
+.sleep-bar{
+  height:6px;border-radius:3px;
+  background:rgba(255,255,255,0.08);
+  overflow:hidden;margin-bottom:6px;
+}
+.sleep-fill{
+  width:60%;height:100%;
+  background:linear-gradient(90deg,#a855f7,#c9b8ec);
+  border-radius:3px;
+}
+.sleep-ticks{
+  display:flex;justify-content:space-between;
+  font-size:9px;color:rgba(255,255,255,0.25);
+}
+.sleep-predict{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  background:rgba(201,184,236,0.08);
+  border-radius:14px;border:1px solid rgba(201,184,236,0.15);
+}
+.sleep-ico{font-size:20px}
+.sleep-predict-title{font-size:11px;color:rgba(201,184,236,0.5);margin-bottom:3px}
+.sleep-predict-time{font-size:15px;font-weight:800;color:#fff}
+
+/* 앱 목업 */
+.app-mockup{padding:16px}
+.app-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:16px;
+}
+.app-logo{font-size:14px;font-weight:800;color:#c9b8ec}
+.app-date{font-size:11px;color:rgba(255,255,255,0.3)}
+.app-today{
+  background:rgba(123,94,167,0.15);
+  border-radius:16px;padding:16px;
+  margin-bottom:14px;
+  border:1px solid rgba(123,94,167,0.2);
+}
+.app-today-label{font-size:10px;color:rgba(201,184,236,0.5);margin-bottom:6px}
+.app-today-main{font-size:18px;font-weight:800;color:#fff;margin-bottom:14px}
+.app-stats{display:flex;gap:8px}
+.app-stat{
+  flex:1;background:rgba(0,0,0,0.2);
+  border-radius:10px;padding:10px 8px;text-align:center;
+}
+.app-stat-v{font-size:15px;font-weight:900;color:#c9b8ec}
+.app-stat-l{font-size:9px;color:rgba(255,255,255,0.35);margin-top:3px}
+.app-record{display:flex;flex-direction:column;gap:2px}
+.app-rec-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  background:rgba(255,255,255,0.04);
+  border-radius:10px;
+}
+.app-rec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.app-rec-txt{flex:1;font-size:12px;color:rgba(255,255,255,0.7);font-weight:500}
+.app-rec-time{font-size:11px;color:rgba(255,255,255,0.3)}
+
+.design-tags{display:flex;gap:8px;flex-wrap:wrap}
+.design-tag{
+  font-size:12px;font-weight:600;
+  padding:6px 14px;border-radius:10px;
+  background:rgba(201,184,236,0.08);color:rgba(201,184,236,0.6);
+  border:1px solid rgba(201,184,236,0.12);
+}
+
+/* 깨시 칩 */
+.sleep-chips-row{display:flex;gap:10px;margin-bottom:16px}
+.sleep-chip{
+  flex:1;display:flex;align-items:center;gap:10px;
+  padding:14px 16px;border-radius:14px;
+}
+.sleep-chip-dark{
+  background:rgba(30,20,60,0.8);
+  border:1px solid rgba(201,184,236,0.15);
+}
+.sleep-chip-light{
+  background:rgba(255,200,80,0.08);
+  border:1px solid rgba(255,200,80,0.18);
+}
+.sc-ico{font-size:20px;flex-shrink:0}
+.sc-label{font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:3px}
+.sc-value{font-size:14px;font-weight:800;color:#fff}
+
+.sleep-timeline{margin-bottom:16px}
+.stl-bar{
+  height:8px;border-radius:4px;
+  background:rgba(255,255,255,0.06);
+  overflow:hidden;display:flex;margin-bottom:6px;
+}
+.stl-sleep{
+  width:75%;background:linear-gradient(90deg,#3730a3,#7B5EA7);
+  border-radius:4px 0 0 4px;
+}
+.stl-awake{
+  width:25%;background:rgba(255,200,80,0.3);
+  border-radius:0 4px 4px 0;
+}
+.stl-labels{
+  display:flex;justify-content:space-between;
+  font-size:9px;color:rgba(255,255,255,0.25);
+}
+
+/* 아기 카드 */
+.baby-cards-wrap{display:flex;flex-direction:column;gap:12px;padding:16px}
+.baby-card{
+  border-radius:18px;padding:18px;
+  backdrop-filter:blur(12px);
+}
+.baby-card-1{
+  background:linear-gradient(135deg,rgba(123,94,167,0.2),rgba(123,94,167,0.08));
+  border:1px solid rgba(123,94,167,0.25);
+}
+.baby-card-2{
+  background:linear-gradient(135deg,rgba(61,154,138,0.2),rgba(61,154,138,0.08));
+  border:1px solid rgba(61,154,138,0.25);
+}
+.bc-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+.bc-moon{font-size:22px}
+.bc-name{font-size:16px;font-weight:800;color:#fff}
+.bc-age{font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px}
+.bc-badge{
+  margin-left:auto;font-size:9px;font-weight:700;
+  padding:3px 10px;border-radius:8px;
+}
+.bc-badge-1{background:rgba(201,184,236,0.15);color:#c9b8ec}
+.bc-badge-2{background:rgba(61,154,138,0.15);color:#5DCAA5}
+.bc-stats{display:flex;gap:8px;margin-bottom:12px}
+.bc-stat{
+  flex:1;background:rgba(0,0,0,0.2);
+  border-radius:10px;padding:10px 8px;text-align:center;
+}
+.bc-val{font-size:14px;font-weight:900;color:#fff}
+.bc-lbl{font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px}
+.bc-last{
+  font-size:11px;color:rgba(255,255,255,0.35);
+  padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);
+}
+
+/* 01 음성 기록 rows */
+.voice-record-row{
+  background:rgba(0,0,0,0.2);
+  border-radius:12px;padding:12px 14px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.vr-said{
+  font-size:15px;font-weight:600;
+  color:rgba(255,255,255,0.85);
+  margin-bottom:10px;
+}
+.vr-chips{display:flex;gap:6px;flex-wrap:wrap}
+
+/* 02 쌍둥이 A안 카드 */
+.ta-card-a{
+  flex:1;background:rgba(255,255,255,0.05);
+  border-radius:16px;padding:16px 14px;
+  border:1px solid rgba(255,255,255,0.07);
+}
+.ta-name-a{font-size:16px;font-weight:900;color:#fff;margin-bottom:3px}
+.ta-sub-a{font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:14px}
+.ta-big-a{font-size:28px;font-weight:900;line-height:1;margin-bottom:3px}
+.ta-lbl-a{font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:12px}
+.ta-div-a{height:1px;background:rgba(255,255,255,0.06);margin:10px 0}
+.ta-row-a{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:rgba(255,255,255,0.4);padding:4px 0;
+}
+.ta-row-a span:last-child{color:rgba(255,255,255,0.75);font-weight:600}
+
+.cta-letter{
+  padding:0 0 100px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-bottom:100px;
+  text-align:center;
+}
+.cta-letter-line1{
+  font-size:32px;font-weight:900;color:#fff;
+  line-height:1.2;letter-spacing:-0.03em;
+  word-break:keep-all;margin-bottom:0;
+}
+.cta-letter-line2{
+  font-size:32px;font-weight:900;color:#fff;
+  line-height:1.2;letter-spacing:-0.03em;
+  word-break:keep-all;margin-bottom:28px;
+}
+.cta-letter-line3{
+  font-size:24px;font-weight:700;
+  color:rgba(255,255,255,0.85);
+  line-height:1.5;letter-spacing:-0.02em;
+  word-break:keep-all;margin-bottom:36px;
+}
+.cta-letter-sign{
+  font-size:13px;font-weight:400;
+  color:rgba(201,184,236,0.45);
+  letter-spacing:0.02em;
+}
+</style>
+</head>
+<body>
+
+<!-- 별 레이어 -->
+<div id="stars"></div>
+
+<!-- STICKY -->
+<div class="sticky" id="sticky">
+  <div class="sticky-cta-wrap">
+    <button class="s-btn" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">
+      <span class="s-btn-top">🐰 TOKI와 함께하기</span>
+      <span class="s-btn-bot">무료 사전예약 — 평생 이용권 받기</span>
+    </button>
+  </div>
+  <div class="sticky-share" onclick="doShare()">
+    <div class="sticky-share-title">육아에 지친 친구에게 슬쩍 보내주기 ↗</div>
+    <div class="sticky-share-sub">이 앱 알려주기 — 1초면 돼요</div>
+  </div>
+</div>
+
+<!-- ══ S1 HERO ══ -->
+<section id="hero">
+  <div class="hero-inner">
+
+    <!-- 1. 헤드라인 -->
+    <h1 class="reveal">
+      <div class="h-title">폰 볼 여유조차 없는 당신께</div>
+      <div class="h-title-2">
+        <div class="h-accent">말로 끝내는<br>1초 육아 기록, <span class="h-accent-pink">TOKI</span></div>
+      </div>
+    </h1>
+
+    <!-- 태그 -->
+    <p class="h-tag reveal r2">#쌍둥이엄마_직접개발 &nbsp;#음성기록 &nbsp;#AI분석 &nbsp;#다둥이모드</p>
+
+    <!-- 2. 파형 카드 -->
+    <div class="glass demo-card reveal r2">
+      <div class="waveform" id="wf"></div>
+      <div class="mic-row">
+        <div class="mic-dot"></div>
+        <div class="vtext"><span id="vt"></span><span class="cursor"></span></div>
+      </div>
+      <div class="vtags">
+        <span class="vtag vt1">🐰 하늘</span>
+        <span class="vtag vt2">오후 3:10</span>
+        <span class="vtag vt3">120ml</span>
+        <span class="vtag vt4">✓ 완료</span>
+      </div>
+    </div>
+
+    <!-- 3. CTA + 공유 링크 -->
+    <div class="reveal r3">
+      <button class="h-cta"
+        onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">
+        <span class="s-btn-top">🐰 TOKI와 함께하기</span>
+        <span class="s-btn-bot">무료 사전예약 — 평생 이용권 받기</span>
+      </button>
+
+    </div>
+
+    <div class="sc-hint reveal r3">
+      <div class="sc-line"></div>
+      <div class="sc-lbl">scroll</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ S2 공감 ══ -->
+<section id="pain">
+  <div class="wrap">
+    <div class="pain-card reveal r2">
+
+      <div class="pain-hero">
+        <span class="hl">아이와 눈 맞추는<br>1초를 위해,</span>
+TOKI는 시작되었습니다.
+      </div>
+
+      <p class="pain-para">
+        한 손에 아이를 안은 채 복잡한 화면을 누르는 건 사치였습니다. 첫째와 둘째의 기록을 착각해 지우고 쓰기를 반복하던 새벽, 결국 앱을 지우고 종이에 직접 수유량을 적기 시작했습니다.
+      </p>
+
+      <p class="pain-para">
+        하지만 매일 밤 졸린 눈을 비비며 수유량을 합산하고 다음 수유 텀을 계산하고도 우리 아이가 제대로 잘 먹고 있는지 확신이 없었습니다.
+      </p>
+
+      <div class="pain-quote">
+        기록은 TOKI가 할게요,<br>엄마, 아빠는 아이만 바라보세요.
+      </div>
+
+      <p class="pain-para">
+        말 한마디로 기록이 채워지고 분석되는 세상. 번거로운 일은 TOKI에게 맡기고, 당신은 아이와의 소중한 순간에만 집중하세요.
+      </p>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ S3 기능 ══ -->
+<section id="features">
+
+  <!-- 01 음성 기록 -->
+  <div class="feat-section reveal">
+    <div class="fs-inner">
+      <div class="feat-num">01</div>
+      <h3 class="feat-headline">말 한마디면 끝.</h3>
+      <p class="feat-one-liner">
+        젖병 든 손 그대로 말하세요.<br>
+        목소리만으로 모든 기록이 완성됩니다.
+      </p>
+      <div class="feat-preview" style="display:flex;flex-direction:column;gap:10px">
+        <div class="voice-record-row">
+          <div class="vr-said">"하늘이 120 먹었어"</div>
+          <div class="vr-chips">
+            <span class="fp-chip">🐰 하늘</span>
+            <span class="fp-chip">120ml</span>
+            <span class="fp-chip" style="color:#7BAE82;border-color:rgba(123,174,130,0.3)">✓ 완료</span>
+          </div>
+        </div>
+        <div class="voice-record-row">
+          <div class="vr-said">"하늘이 비타민D 먹었어"</div>
+          <div class="vr-chips">
+            <span class="fp-chip">🐰 하늘</span>
+            <span class="fp-chip">비타민D</span>
+            <span class="fp-chip" style="color:#7BAE82;border-color:rgba(123,174,130,0.3)">✓ 완료</span>
+          </div>
+        </div>
+        <div class="voice-record-row">
+          <div class="vr-said">"하늘이 목욕했어"</div>
+          <div class="vr-chips">
+            <span class="fp-chip">🐰 하늘</span>
+            <span class="fp-chip">목욕</span>
+            <span class="fp-chip" style="color:#7BAE82;border-color:rgba(123,174,130,0.3)">✓ 완료</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 쌍둥이 모드 -->
+  <div class="feat-section reveal">
+    <div class="fs-inner">
+      <div class="feat-num">02</div>
+      <h3 class="feat-headline">두 배 더 바쁜 쌍둥이맘도<br>헷갈릴 필요 없이</h3>
+      <p class="feat-one-liner">
+        이름만 부르면 자동 분류,<br>
+        다둥이 부모를 위한 유일한 맞춤 설계.
+      </p>
+      <div class="feat-preview" style="padding:16px">
+        <div style="display:flex;gap:10px">
+          <div class="ta-card-a">
+            <div class="ta-name-a">🐰 하늘</div>
+            <div class="ta-sub-a">첫째 · 생후 142일</div>
+            <div class="ta-big-a" style="color:#c9b8ec">720ml</div>
+            <div class="ta-lbl-a">오늘 총 수유량</div>
+            <div class="ta-div-a"></div>
+            <div class="ta-row-a"><span>수유</span><span>8회</span></div>
+            <div class="ta-row-a"><span>수유텀</span><span>3h 42m</span></div>
+            <div class="ta-row-a"><span>마지막</span><span>오후 3:10</span></div>
+          </div>
+          <div class="ta-card-a">
+            <div class="ta-name-a">🐋 별이</div>
+            <div class="ta-sub-a">둘째 · 생후 142일</div>
+            <div class="ta-big-a" style="color:#5DCAA5">660ml</div>
+            <div class="ta-lbl-a">오늘 총 수유량</div>
+            <div class="ta-div-a"></div>
+            <div class="ta-row-a"><span>수유</span><span>7회</span></div>
+            <div class="ta-row-a"><span>수유텀</span><span>4h 10m</span></div>
+            <div class="ta-row-a"><span>마지막</span><span>오후 2:40</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 AI 분석 -->
+  <div class="feat-section reveal">
+    <div class="fs-inner">
+      <div class="feat-num">03</div>
+      <h3 class="feat-headline">불안함은 확신으로,<br>낭비는 절약으로</h3>
+      <p class="feat-one-liner">
+        기록이 쌓이면 AI가 분석합니다.<br>
+        수유 패턴 예측부터 분유 절약까지.
+      </p>
+      <div class="feat-preview">
+        <div class="ai-preview">
+          <div class="ai-card-p">
+            <div class="v">4h 0m</div>
+            <div class="l">이번주 평균 수유텀</div>
+          </div>
+          <div class="ai-card-p">
+            <div class="v green">-₩4,200</div>
+            <div class="l">이번달 분유 절약</div>
+          </div>
+        </div>
+        <div class="ai-insight-row">
+          <div class="ai-insight-icon">✨</div>
+          <div class="ai-insight-text">수유 간격이 4시간으로 늘었어요.<br><strong style="color:#c9b8ec">성장하고 있어요 🌱</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 깨시 관리 -->
+  <div class="feat-section reveal">
+    <div class="fs-inner">
+      <div class="feat-num">04</div>
+      <h3 class="feat-headline">아이의 졸음 신호를 읽는<br>가장 우아한 방법</h3>
+      <p class="feat-one-liner">
+        몇 시에 재워야 할지 고민은 끝.<br>
+        세상에서 가장 쉬운 깨시 관리 모드.
+      </p>
+      <div class="feat-preview">
+        <div class="sleep-chips-row">
+          <div class="sleep-chip sleep-chip-dark">
+            <span class="sc-ico">🌙</span>
+            <div>
+              <div class="sc-label">잠</div>
+              <div class="sc-value">1시간 23분째</div>
+            </div>
+          </div>
+          <div class="sleep-chip sleep-chip-light">
+            <span class="sc-ico">☀️</span>
+            <div>
+              <div class="sc-label">깸</div>
+              <div class="sc-value">0분째</div>
+            </div>
+          </div>
+        </div>
+        <div class="sleep-timeline">
+          <div class="stl-bar">
+            <div class="stl-sleep"></div>
+            <div class="stl-awake"></div>
+          </div>
+          <div class="stl-labels">
+            <span>오후 8:00</span>
+            <span style="color:#c9b8ec">지금</span>
+            <span>오전 0:00</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 프리미엄 디자인 -->
+  <div class="feat-section reveal">
+    <div class="fs-inner">
+      <div class="feat-num">05</div>
+      <h3 class="feat-headline">유치함은 덜어내고,<br>우아함은 더하고</h3>
+      <p class="feat-one-liner">
+        육아를 해도 당신의 감각은 그대로.<br>
+        TOKI만의 프리미엄 디자인.
+      </p>
+      <!-- 아기 카드 목업 -->
+      <div class="feat-preview baby-cards-wrap">
+        <!-- 하늘 카드 -->
+        <div class="baby-card baby-card-1">
+          <div class="bc-header">
+            <div class="bc-moon">🌙</div>
+            <div>
+              <div class="bc-name">하늘</div>
+              <div class="bc-age">생후 142일</div>
+            </div>
+            <div class="bc-badge bc-badge-1">첫째</div>
+          </div>
+          <div class="bc-stats">
+            <div class="bc-stat"><div class="bc-val">8회</div><div class="bc-lbl">수유</div></div>
+            <div class="bc-stat"><div class="bc-val">720ml</div><div class="bc-lbl">총량</div></div>
+            <div class="bc-stat"><div class="bc-val">3h 42m</div><div class="bc-lbl">수유텀</div></div>
+          </div>
+          <div class="bc-last">마지막 수유 · 오후 3:10 · 120ml</div>
+        </div>
+        <!-- 별이 카드 -->
+        <div class="baby-card baby-card-2">
+          <div class="bc-header">
+            <div class="bc-moon">⭐</div>
+            <div>
+              <div class="bc-name">별이</div>
+              <div class="bc-age">생후 142일</div>
+            </div>
+            <div class="bc-badge bc-badge-2">둘째</div>
+          </div>
+          <div class="bc-stats">
+            <div class="bc-stat"><div class="bc-val">7회</div><div class="bc-lbl">수유</div></div>
+            <div class="bc-stat"><div class="bc-val">660ml</div><div class="bc-lbl">총량</div></div>
+            <div class="bc-stat"><div class="bc-val">4h 10m</div><div class="bc-lbl">수유텀</div></div>
+          </div>
+          <div class="bc-last">마지막 수유 · 오후 2:40 · 110ml</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══ S4 CTA ══ -->
+<section id="cta">
+  <div class="wrap">
+
+    <!-- 대표 편지 -->
+    <div class="cta-letter reveal">
+      <p class="cta-letter-line1">아이 눈 맞추는 시간을</p>
+      <p class="cta-letter-line2">1초라도 더,</p>
+      <p class="cta-letter-line3">TOKI가 그 시간을 선물합니다.</p>
+      <p class="cta-letter-sign">— 쌍둥이 엄마, TOKI 대표 드림 —</p>
+    </div>
+
+    <div class="cta-open reveal">
+      <h2 class="cta-title">
+        파운딩 맘, <span class="cta-acc">모집합니다.</span>
+      </h2>
+      <p class="cta-sub">
+        <strong>딱 100분께만 드리는 약속입니다.</strong>
+      </p>
+
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit-head">
+            <div class="bk">✓</div>
+            <div class="benefit-title">평생, 추가 결제 없이 모든 기능을.</div>
+          </div>
+          <div class="benefit-desc">오늘의 가치있는 선택에 보답합니다.
+앞으로 추가될 모든 유료 서비스를 평생 무료로 누리세요.</div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-head">
+            <div class="bk">✓</div>
+            <div class="benefit-title">가장 먼저 만나는 미래의 육아.</div>
+          </div>
+          <div class="benefit-desc">목소리로 기록하고 AI가 분석하는 TOKI의 혁신적인 기능들을
+정식 출시 전 가장 먼저 경험합니다.</div>
+        </div>
+        <div class="benefit">
+          <div class="benefit-head">
+            <div class="bk">✓</div>
+            <div class="benefit-title">당신의 목소리로 완성되는 TOKI.</div>
+          </div>
+          <div class="benefit-desc">불편했던 조작감부터 꼭 필요했던 데이터 분석까지.
+파운딩 맘의 제안을 최우선으로 검토, 반영합니다.</div>
+        </div>
+      </div>
+
+      <div id="form-wrap">
+        <div class="form">
+          <input class="inp" id="ni" type="text" placeholder="이름" autocomplete="name" required/>
+          <input class="inp" id="ei" type="email" placeholder="이메일" autocomplete="email" required/>
+          <input class="inp" id="ti" type="tel" placeholder="전화번호" autocomplete="tel" required/>
+          <p style="font-size:13px;font-weight:500;color:rgba(201,184,236,0.65);margin-top:-2px;line-height:1.7;">TOKI 설치 링크 및 평생이용권을<br>입력하신 전화번호와 이메일로 보내드려요</p>
+          <button class="sub-btn" onclick="doSubmit()">🐰 TOKI와 함께하기</button>
+        </div>
+        
+      </div>
+
+      <div class="done" id="done">
+        <div class="done-ico">🎉</div>
+        <div class="done-t">신청 완료됐어요!</div>
+        <div class="done-s">곧 연락드릴게요 💜</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="ft">
+    <div class="ft-link reveal r3">
+      <a href="https://toki-main.vercel.app/" target="_blank">toki-main.vercel.app</a>
+    </div>
+    <div class="ft-logo reveal r3">
+      <img src="./assets/toki_logo_clean.png" alt="TOKI"/>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── 별 생성 ──────────────────────────────────────────────
+const sl = document.getElementById('stars');
+for(let i=0;i<65;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  const sz=Math.random()*2+0.5;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--dur:${2+Math.random()*4}s;--delay:${Math.random()*5}s;--min:${0.05+Math.random()*0.08};--max:${0.4+Math.random()*0.55};`;
+  sl.appendChild(s);
+}
+for(let i=0;i<5;i++){
+  const ss=document.createElement('div');
+  ss.className='shoot';
+  ss.style.cssText=`left:${Math.random()*60}%;top:${5+Math.random()*45}%;width:${70+Math.random()*120}px;--sd:${5+Math.random()*6}s;--sdelay:${i*2.2+Math.random()*2}s;`;
+  sl.appendChild(ss);
+}
+
+// ── 파형 2 (기능 섹션) ──────────────────────────────────
+const wf2=document.getElementById('fp-wave');
+if(wf2){
+  [6,12,22,34,24,40,28,16,36,24,42,18,10,30,22,14].forEach((h,i)=>{
+    const b=document.createElement('div');
+    b.className='fp-wbar';
+    b.style.setProperty('--h',h+'px');
+    b.style.setProperty('--d',(0.5+Math.random()*.7)+'s');
+    b.style.animationDelay=(i*.04)+'s';
+    wf2.appendChild(b);
+  });
+}
+
+// ── 파형 생성 ────────────────────────────────────────────
+const wf=document.getElementById('wf');
+[8,18,32,46,34,54,38,22,48,34,56,26,14,44,36,24,10,40,30,50,16,36,44,18,38,30,12,28].forEach((h,i)=>{
+  const b=document.createElement('div');
+  b.className='w-bar';
+  b.style.setProperty('--h',h+'px');
+  b.style.setProperty('--d',(0.5+Math.random()*.7)+'s');
+  b.style.animationDelay=(i*.045)+'s';
+  wf.appendChild(b);
+});
+
+// ── 타이핑 ───────────────────────────────────────────────
+const texts=['"하늘이 3시 10분 120 먹었어"','"별이 응가했어"','"하늘이 비타민D 먹었어"','"별이 목욕했어"'];
+let ti=0,ci=0,del=false;
+const vt=document.getElementById('vt');
+function type(){
+  const c=texts[ti];
+  if(!del){ci++;vt.textContent=c.slice(0,ci);if(ci===c.length){del=true;setTimeout(type,2200);return;}}
+  else{ci--;vt.textContent=c.slice(0,ci);if(ci===0){del=false;ti=(ti+1)%texts.length;setTimeout(type,450);return;}}
+  setTimeout(type,del?36:72);
+}
+setTimeout(type,1000);
+
+// ── Reveal ───────────────────────────────────────────────
+const obs=new IntersectionObserver(
+  e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on')}),
+  {threshold:.1}
+);
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── Sticky ───────────────────────────────────────────────
+new IntersectionObserver(
+  ([e])=>document.getElementById('sticky').classList.toggle('show',!e.isIntersecting),
+  {threshold:0}
+).observe(document.getElementById('hero'));
+
+// ── 공유 ────────────────────────────────────────────────
+function doShare(){
+  const url='https://toki-main.vercel.app/';
+  const text='잠 못 자는 육아 중에 발견한 앱 🐰 말 한마디로 수유기록이 끝난대! TOKI 써봐';
+  if(navigator.share){
+    navigator.share({title:'TOKI — 말로 끝내는 육아 기록',text,url}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(url+'\n'+text).then(()=>{
+      const btn=document.querySelector('.share-link');
+      const orig=btn.textContent;
+      btn.textContent='링크가 복사됐어요 💜';
+      setTimeout(()=>{btn.textContent=orig},2000);
+    });
+  }
+}
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqtRlB1ai97hh2e-AcH7dIeAmyTfFcVBNgUFDb2UujOzfup3DfpfyS-wb2t9gHbhjfPQ/exec';
+
+function doSubmit(){
+  const n=document.getElementById('ni').value.trim();
+  const e=document.getElementById('ei').value.trim();
+  const t=document.getElementById('ti').value.trim();
+  if(!n){document.getElementById('ni').style.borderColor='rgba(212,83,126,.6)';document.getElementById('ni').focus();return;}
+  if(!e||!e.includes('@')){document.getElementById('ei').style.borderColor='rgba(212,83,126,.6)';document.getElementById('ei').focus();return;}
+  if(!t){document.getElementById('ti').style.borderColor='rgba(212,83,126,.6)';document.getElementById('ti').focus();return;}
+
+  // 버튼 로딩 상태
+  const btn = document.querySelector('.sub-btn');
+  btn.textContent = '신청 중...';
+  btn.disabled = true;
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name: n, email: e, tel: t})
+  })
+  .then(() => {
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('done').classList.add('show');
+    document.getElementById('sticky').classList.remove('show');
+  })
+  .catch(() => {
+    // no-cors라 에러 없이 성공으로 처리
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('done').classList.add('show');
+    document.getElementById('sticky').classList.remove('show');
+  });
+}
+</script>
+</body>
+</html>
