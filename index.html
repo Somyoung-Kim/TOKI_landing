@@ -1334,35 +1334,38 @@ function doShare(){
     });
   }
 }
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqtRlB1ai97hh2e-AcH7dIeAmyTfFcVBNgUFDb2UujOzfup3DfpfyS-wb2t9gHbhjfPQ/exec';
+// ── Google Sheets 연동 URL ──────────────────────────────
+// Apps Script 배포 후 받은 URL로 교체하세요
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzaUXnTCSbZQykz99ArUE14YGbfavz_L9pr7MiAg-lbKEdtf2sJt1kEzl-U8gig4HXHXA/exec';
 
+// ── UTM 유입경로 읽기 ────────────────────────────────────
+function getUTM() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('utm_source') || '직접접속';
+}
+
+// ── 폼 제출 ──────────────────────────────────────────────
 function doSubmit(){
-  const n=document.getElementById('ni').value.trim();
-  const e=document.getElementById('ei').value.trim();
-  const t=document.getElementById('ti').value.trim();
-  if(!n){document.getElementById('ni').style.borderColor='rgba(212,83,126,.6)';document.getElementById('ni').focus();return;}
-  if(!e||!e.includes('@')){document.getElementById('ei').style.borderColor='rgba(212,83,126,.6)';document.getElementById('ei').focus();return;}
-  if(!t){document.getElementById('ti').style.borderColor='rgba(212,83,126,.6)';document.getElementById('ti').focus();return;}
+  const n = document.getElementById('ni').value.trim();
+  const e = document.getElementById('ei').value.trim();
+  const t = document.getElementById('ti').value.trim();
 
-  // 버튼 로딩 상태
+  if(!n){ document.getElementById('ni').style.borderColor='rgba(212,83,126,.6)'; document.getElementById('ni').focus(); return; }
+  if(!e||!e.includes('@')){ document.getElementById('ei').style.borderColor='rgba(212,83,126,.6)'; document.getElementById('ei').focus(); return; }
+  if(!t){ document.getElementById('ti').style.borderColor='rgba(212,83,126,.6)'; document.getElementById('ti').focus(); return; }
+
   const btn = document.querySelector('.sub-btn');
   btn.textContent = '신청 중...';
   btn.disabled = true;
 
-  fetch(SCRIPT_URL, {
+  fetch(SHEET_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({name: n, email: e, tel: t})
+    body: JSON.stringify({ name: n, email: e, tel: t, source: getUTM() })
   })
-  .then(() => {
-    document.getElementById('form-wrap').style.display='none';
-    document.getElementById('done').classList.add('show');
-    document.getElementById('sticky').classList.remove('show');
-  })
-  .catch(() => {
-    // no-cors라 에러 없이 성공으로 처리
-    document.getElementById('form-wrap').style.display='none';
+  .finally(() => {
+    document.getElementById('form-wrap').style.display = 'none';
     document.getElementById('done').classList.add('show');
     document.getElementById('sticky').classList.remove('show');
   });
