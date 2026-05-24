@@ -878,6 +878,57 @@ footer{
   color:rgba(201,184,236,0.45);
   letter-spacing:0.02em;
 }
+
+/* 마감 뱃지 */
+.sold-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(212,83,126,0.15);
+  border:1px solid rgba(212,83,126,0.35);
+  border-radius:100px;padding:6px 16px;
+  font-size:12px;font-weight:700;
+  color:#F4819A;
+  letter-spacing:0.02em;
+  margin-bottom:20px;
+}
+
+/* 혜택 오버레이 */
+.benefits-wrap{
+  position:relative;
+  margin-bottom:56px;
+}
+.benefit-round-label{
+  font-size:10px;font-weight:700;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(212,83,126,0.6);
+  margin-bottom:20px;
+}
+.benefits-blur{
+  opacity:0.3;
+  filter:blur(1.5px);
+  pointer-events:none;
+  margin-bottom:0;
+  user-select:none;
+}
+.benefit-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(13,8,24,0.55);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  border-radius:16px;
+  border:1px solid rgba(201,184,236,0.12);
+}
+.bo-inner{text-align:center}
+.bo-icon{font-size:28px;margin-bottom:10px}
+.bo-title{
+  font-size:18px;font-weight:800;color:#fff;
+  letter-spacing:-0.02em;margin-bottom:6px;
+}
+.bo-sub{
+  font-size:13px;color:rgba(201,184,236,0.55);
+  font-weight:400;
+}
 </style>
 </head>
 <body>
@@ -889,8 +940,8 @@ footer{
 <div class="sticky" id="sticky">
   <div class="sticky-cta-wrap">
     <button class="s-btn" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">
-      <span class="s-btn-top">🐰 TOKI와 함께하기</span>
-      <span class="s-btn-bot">무료 사전예약 — 평생 이용권 받기</span>
+      <span class="s-btn-top">🔥 1차 마감 · 2차 대기 오픈</span>
+      <span class="s-btn-bot">2차 대기 신청하기</span>
     </button>
   </div>
   <div class="sticky-share" onclick="doShare()">
@@ -933,8 +984,8 @@ footer{
     <div class="reveal r3">
       <button class="h-cta"
         onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">
-        <span class="s-btn-top">🐰 TOKI와 함께하기</span>
-        <span class="s-btn-bot">무료 사전예약 — 평생 이용권 받기</span>
+        <span class="s-btn-top">🔥 1차 마감 · 2차 대기 오픈</span>
+        <span class="s-btn-bot">2차 대기 신청하기</span>
       </button>
 
     </div>
@@ -1190,37 +1241,53 @@ TOKI는 시작되었습니다.
 
     <div class="cta-open reveal">
       <h2 class="cta-title">
-        파운딩 맘, <span class="cta-acc">모집합니다.</span>
+2차 대기자 <span class="cta-acc">명단 오픈!</span>
       </h2>
       <p class="cta-sub">
-        <strong>딱 100분께만 드리는 약속입니다.</strong>
+<strong>🔥 1차 100명 마감!</strong> 2차 오픈 시 가장 먼저 연락드려요.
       </p>
 
-      <div class="benefits">
-        <div class="benefit">
-          <div class="benefit-head">
-            <div class="bk">✓</div>
-            <div class="benefit-title">평생, 추가 결제 없이 모든 기능을.</div>
-          </div>
-          <div class="benefit-desc">오늘의 가치있는 선택에 보답합니다.
+      <!-- 1차 혜택 + 2차 예고 오버레이 -->
+      <div class="benefits-wrap">
+
+        <!-- 1차 혜택 (흐릿하게) -->
+        <div class="benefits benefits-blur">
+          <div class="benefit-round-label">1차 파운딩맘 혜택</div>
+          <div class="benefit">
+            <div class="benefit-head">
+              <div class="bk">✓</div>
+              <div class="benefit-title">평생, 추가 결제 없이 모든 기능을.</div>
+            </div>
+            <div class="benefit-desc">오늘의 가치있는 선택에 보답합니다.
 앞으로 추가될 모든 유료 서비스를 평생 무료로 누리세요.</div>
-        </div>
-        <div class="benefit">
-          <div class="benefit-head">
-            <div class="bk">✓</div>
-            <div class="benefit-title">가장 먼저 만나는 미래의 육아.</div>
           </div>
-          <div class="benefit-desc">목소리로 기록하고 AI가 분석하는 TOKI의 혁신적인 기능들을
+          <div class="benefit">
+            <div class="benefit-head">
+              <div class="bk">✓</div>
+              <div class="benefit-title">가장 먼저 만나는 미래의 육아.</div>
+            </div>
+            <div class="benefit-desc">목소리로 기록하고 AI가 분석하는 TOKI의 혁신적인 기능들을
 정식 출시 전 가장 먼저 경험합니다.</div>
-        </div>
-        <div class="benefit">
-          <div class="benefit-head">
-            <div class="bk">✓</div>
-            <div class="benefit-title">당신의 목소리로 완성되는 TOKI.</div>
           </div>
-          <div class="benefit-desc">불편했던 조작감부터 꼭 필요했던 데이터 분석까지.
+          <div class="benefit">
+            <div class="benefit-head">
+              <div class="bk">✓</div>
+              <div class="benefit-title">당신의 목소리로 완성되는 TOKI.</div>
+            </div>
+            <div class="benefit-desc">불편했던 조작감부터 꼭 필요했던 데이터 분석까지.
 파운딩 맘의 제안을 최우선으로 검토, 반영합니다.</div>
+          </div>
         </div>
+
+        <!-- 2차 혜택 예고 오버레이 -->
+        <div class="benefit-overlay">
+          <div class="bo-inner">
+            <div class="bo-icon">🔒</div>
+            <div class="bo-title">2차 혜택 준비 중</div>
+            <div class="bo-sub">2차 오픈과 함께 공개됩니다</div>
+          </div>
+        </div>
+
       </div>
 
       <div id="form-wrap">
@@ -1228,7 +1295,7 @@ TOKI는 시작되었습니다.
           <input class="inp" id="ni" type="text" placeholder="이름" autocomplete="name" required/>
           <input class="inp" id="ei" type="email" placeholder="이메일" autocomplete="email" required/>
           <input class="inp" id="ti" type="tel" placeholder="전화번호" autocomplete="tel" required/>
-          <p style="font-size:13px;font-weight:500;color:rgba(201,184,236,0.65);margin-top:-2px;line-height:1.7;">TOKI 설치 링크 및 평생이용권을<br>입력하신 전화번호와 이메일로 보내드려요</p>
+          <p style="font-size:13px;font-weight:500;color:rgba(201,184,236,0.65);margin-top:-2px;line-height:1.7;">2차 오픈 소식을 입력하신 전화번호와<br>이메일로 가장 먼저 보내드려요</p>
           <button class="sub-btn" onclick="doSubmit()">🐰 TOKI와 함께하기</button>
         </div>
         
@@ -1236,8 +1303,8 @@ TOKI는 시작되었습니다.
 
       <div class="done" id="done">
         <div class="done-ico">🎉</div>
-        <div class="done-t">신청 완료됐어요!</div>
-        <div class="done-s">곧 연락드릴게요 💜</div>
+        <div class="done-t">2차 대기 신청 완료!</div>
+        <div class="done-s">2차 오픈 시 가장 먼저 연락드릴게요 💜</div>
       </div>
     </div>
   </div>
