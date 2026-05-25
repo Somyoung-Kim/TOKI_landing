@@ -929,6 +929,28 @@ footer{
   font-size:13px;color:rgba(201,184,236,0.55);
   font-weight:400;
 }
+
+.privacy-wrap{
+  padding:14px 0 4px;
+}
+.privacy-label{
+  display:flex;align-items:flex-start;gap:10px;
+  cursor:pointer;
+}
+.privacy-check{
+  width:18px;height:18px;flex-shrink:0;margin-top:2px;
+  accent-color:var(--main);cursor:pointer;
+}
+.privacy-text{
+  font-size:12px;color:rgba(255,255,255,0.5);
+  line-height:1.6;word-break:keep-all;
+}
+.privacy-text strong{color:rgba(255,255,255,0.75);font-weight:700}
+.privacy-detail{
+  display:block;font-size:11px;
+  color:rgba(255,255,255,0.3);
+  margin-top:4px;line-height:1.65;
+}
 </style>
 </head>
 <body>
@@ -1296,6 +1318,16 @@ TOKI는 시작되었습니다.
           <input class="inp" id="ei" type="email" placeholder="이메일" autocomplete="email" required/>
           <input class="inp" id="ti" type="tel" placeholder="전화번호" autocomplete="tel" required/>
           <p style="font-size:13px;font-weight:500;color:rgba(201,184,236,0.65);margin-top:-2px;line-height:1.7;">2차 오픈 소식을 입력하신 전화번호와<br>이메일로 가장 먼저 보내드려요</p>
+          <!-- 개인정보 동의 체크박스 -->
+          <div class="privacy-wrap">
+            <label class="privacy-label">
+              <input type="checkbox" id="privacy-check" class="privacy-check"/>
+              <span class="privacy-text">
+                <strong>(필수)</strong> 개인정보 수집 및 이용 동의
+                <span class="privacy-detail">· 수집항목: 이름, 이메일, 전화번호 · 목적: TOKI 파운딩맘 혜택 안내, 베타테스트 링크 전송 및 서비스 알림 · 보유기간: 서비스 종료 시 또는 이용자 요청 시 즉시 파기</span>
+              </span>
+            </label>
+          </div>
           <button class="sub-btn" onclick="doSubmit()">🐰 TOKI와 함께하기</button>
         </div>
         
@@ -1420,6 +1452,11 @@ function doSubmit(){
   if(!n){ document.getElementById('ni').style.borderColor='rgba(212,83,126,.6)'; document.getElementById('ni').focus(); return; }
   if(!e||!e.includes('@')){ document.getElementById('ei').style.borderColor='rgba(212,83,126,.6)'; document.getElementById('ei').focus(); return; }
   if(!t){ document.getElementById('ti').style.borderColor='rgba(212,83,126,.6)'; document.getElementById('ti').focus(); return; }
+  if(!document.getElementById('privacy-check').checked){
+    document.getElementById('privacy-check').style.outline='2px solid rgba(212,83,126,.8)';
+    document.getElementById('privacy-check').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
 
   const btn = document.querySelector('.sub-btn');
   btn.textContent = '신청 중...';
