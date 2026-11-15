@@ -326,6 +326,7 @@ footer{
   border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);
   font-size:16px;color:#fff;outline:none;-webkit-appearance:none;appearance:none;
 }
+.fld label .opt{font-weight:500;color:rgba(255,255,255,.35);margin-left:4px}
 .fld input::placeholder{color:rgba(255,255,255,.35)}
 .fld input:focus{border-color:rgba(201,184,236,.5)}
 .agree{display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.6;color:rgba(255,255,255,.6)}
@@ -596,6 +597,7 @@ footer{
       <div class="fld"><label for="ni">이름</label><input id="ni" type="text" maxlength="50" placeholder="이름" autocomplete="name"/></div>
       <div class="fld"><label for="ei">이메일</label><input id="ei" type="email" placeholder="이메일 주소" autocomplete="email"/></div>
       <div class="fld"><label for="ti">전화번호</label><input id="ti" type="tel" inputmode="tel" placeholder="010-0000-0000" autocomplete="tel"/></div>
+      <div class="fld"><label for="ri">초대코드<span class="opt">(선택)</span></label><input id="ri" type="text" maxlength="30" placeholder="친구가 알려준 코드" autocomplete="off" autocapitalize="off" spellcheck="false"/></div>
       <label class="agree">
         <input type="checkbox" id="pc"/>
         <span><b>[필수]</b> 개인정보 수집·이용 동의 <a href="https://toki-main.vercel.app/privacy" target="_blank" rel="noopener">전문보기</a></span>
@@ -686,7 +688,7 @@ function getUTM() {
 // ── 신청 시트 ────────────────────────────────────────────
 const sb=document.getElementById('sb'), sheet=document.getElementById('sheet');
 const md=document.getElementById('md');
-const fN=document.getElementById('ni'), fE=document.getElementById('ei'), fT=document.getElementById('ti'), fC=document.getElementById('pc');
+const fN=document.getElementById('ni'), fE=document.getElementById('ei'), fT=document.getElementById('ti'), fR=document.getElementById('ri'), fC=document.getElementById('pc');
 const btn=document.getElementById('sbtn'), errEl=document.getElementById('err');
 let submitting=false, lastFocus=null;
 
@@ -700,7 +702,7 @@ function isValid(){
 function refresh(){ btn.disabled = submitting || !isValid(); }
 function showErr(m){ errEl.textContent=m; errEl.classList.add('show'); }
 function clearErr(){ errEl.textContent=''; errEl.classList.remove('show'); }
-[fN,fE,fT].forEach(f=>f.addEventListener('input',()=>{clearErr();refresh();}));
+[fN,fE,fT,fR].forEach(f=>f.addEventListener('input',()=>{clearErr();refresh();}));
 fC.addEventListener('change',()=>{clearErr();refresh();});
 
 // 키보드가 올라와도 시트가 가려지지 않게 보이는 영역에 맞춘다
@@ -752,6 +754,7 @@ document.getElementById('apply').addEventListener('submit',async ev=>{
         name:fN.value.trim(),
         email:fE.value.trim(),
         tel:fT.value.trim(),
+        ref:fR.value.trim(),
         consent:true,
         consentAt:new Date().toISOString(),
         batch:'3차-파운딩맘',
@@ -773,7 +776,7 @@ document.getElementById('apply').addEventListener('submit',async ev=>{
 
 document.getElementById('mbtn').addEventListener('click',()=>{
   md.classList.remove('open');md.setAttribute('aria-hidden','true');
-  fN.value='';fE.value='';fT.value='';fC.checked=false;
+  fN.value='';fE.value='';fT.value='';fR.value='';fC.checked=false;
   document.getElementById('sticky').classList.add('applied');
   closeSheet();
 });
